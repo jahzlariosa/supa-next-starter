@@ -18,18 +18,32 @@ drop policy if exists "Anyone can update their own avatar." on storage.objects;
 -- Create a table for public profiles
 create table public.profiles (
   id uuid references auth.users not null primary key,
-  updated_at timestamp with time zone,
+  updated_at timestamp with time zone not null default now(),
   username text unique,
   firstname text,
   lastname text,
+  bio text,
   avatar_url text,
   email text not null unique,
   joined_date timestamp with time zone not null default now(),
   constraint username_length check (char_length(username) >= 3)
 );
 
+-- Create a function to update the 'updated_at' column
+create or replace function update_updated_at_column()
+returns trigger as $$
+begin
+  new.updated_at = now();
+  return new;
+end;
+$$ language plpgsql;
+
+-- Create a trigger to update 'updated_at' before any update
+create trigger update_profiles_updated_at
+before update on public.profiles
+for each row execute procedure update_updated_at_column();
+
 -- Set up Row Level Security (RLS)
--- See https://supabase.com/docs/guides/database/postgres/row-level-security for more details.
 alter table public.profiles
   enable row level security;
 
@@ -43,7 +57,6 @@ create policy "Users can update own profile." on public.profiles
   for update using ((select auth.uid()) = id);
 
 -- This trigger automatically creates a profile entry when a new user signs up via Supabase Auth.
--- See https://supabase.com/docs/guides/auth/managing-user-data#using-triggers for more details.
 create function public.handle_new_user()
 returns trigger
 set search_path = 'public'
@@ -64,7 +77,6 @@ insert into storage.buckets (id, name, public)
   values ('avatars', 'avatars', true);
 
 -- Set up access controls for storage.
--- See https://supabase.com/docs/guides/storage/security/access-control#policy-examples for more details.
 create policy "Avatar images are publicly accessible." on storage.objects
   for select using (bucket_id = 'avatars');
 
