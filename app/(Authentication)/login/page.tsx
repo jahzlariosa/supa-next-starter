@@ -4,7 +4,6 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
-import OAuthLoginForm from '../components/OAuthLoginForm';
 
 export default function LoginPage() {
   return (
@@ -53,7 +52,6 @@ export default function LoginPage() {
               Log in
             </Button>
           </form>
-          <OAuthLoginForm />
           <div className='mt-4 text-center text-sm'>
             Don&apos;t have an account?{' '}
             <Link
@@ -67,7 +65,7 @@ export default function LoginPage() {
       </div>
       <div className='hidden bg-muted lg:block lg:col-span-8'>
         <Image
-          src='/banners/banner1.jpg'
+          src='/placeholder.svg'
           alt='Image'
           width='1920'
           height='1080'

@@ -15,7 +15,7 @@ export default function SignUpPage() {
       </div>
       <div className='hidden bg-muted lg:block lg:col-span-8'>
         <Image
-          src='/banners/banner1.jpg'
+          src='/placeholder.svg'
           alt='Image'
           width='1920'
           height='1080'
